@@ -1,6 +1,6 @@
-# AKS Cluster (Compute & Platform)
+# aks.tf
 resource "azurerm_kubernetes_cluster" "aviator_core" {
-  name                = var.aks_cluster_name
+  name                = "aks-aviator-core"
   location            = azurerm_resource_group.aviator.location
   resource_group_name = azurerm_resource_group.aviator.name
   dns_prefix          = "aviatorcore"
@@ -8,13 +8,12 @@ resource "azurerm_kubernetes_cluster" "aviator_core" {
   default_node_pool {
     name       = "default"
     node_count = 1
-    vm_size    = "Standard_DC2as_v5" # Updated to an allowed size
+    vm_size    = "Standard_D2as_v6" # Updated to supported East US 2 SKU
     os_disk_type = "Managed"
   }
 
-  # Managed Identity for secret-less authentication
   identity {
-    type = "SystemAssigned" 
+    type = "SystemAssigned"
   }
 
   tags = {

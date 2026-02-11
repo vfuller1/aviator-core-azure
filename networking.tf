@@ -1,3 +1,5 @@
+# networking.tf
+
 # Resource Group
 resource "azurerm_resource_group" "aviator" {
   name     = var.resource_group_name
@@ -37,6 +39,14 @@ resource "azurerm_subnet" "sql_subnet" {
       ]
     }
   }
+}
+
+# New Subnet for Private Endpoints (No delegation!)
+resource "azurerm_subnet" "endpoint_subnet" {
+  name                 = "snet-endpoints-aviator"
+  resource_group_name  = azurerm_resource_group.aviator.name
+  virtual_network_name = azurerm_virtual_network.spoke.name
+  address_prefixes     = ["10.1.3.0/24"]
 }
 
 # Private DNS Zone for SQL Name Resolution
