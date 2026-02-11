@@ -20,6 +20,39 @@ resource "azurerm_virtual_network" "spoke" {
   address_space       = ["10.1.0.0/16"]
 }
 
+# Dedicated Subnet for SQL Managed Instance (Delegated)
+resource "azurerm_subnet" "sql_subnet" {
+  name                 = "snet-sql-aviator"
+  resource_group_name  = azurerm_resource_group.aviator.name
+  virtual_network_name = azurerm_virtual_network.spoke.name
+  address_prefixes     = ["10.1.2.0/24"]
+
+  delegation {
+    name = "managedinstancedelegation"
+    service_delegation {
+      name    = "Microsoft.Sql/managedInstances"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/join/action", 
+        "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"
+      ]
+    }
+  }
+}
+
+# Private DNS Zone for SQL Name Resolution
+resource "azurerm_private_dns_zone" "sql_dns" {
+  name                = "privatelink.database.windows.net"
+  resource_group_name = azurerm_resource_group.aviator.name
+}
+
+# Link DNS Zone to the Spoke VNet
+resource "azurerm_private_dns_zone_virtual_network_link" "sql_dns_link" {
+  name                  = "sql-dns-link"
+  resource_group_name   = azurerm_resource_group.aviator.name
+  private_dns_zone_name = azurerm_private_dns_zone.sql_dns.name
+  virtual_network_id    = azurerm_virtual_network.spoke.id
+}
+
 # VNet Peering
 resource "azurerm_virtual_network_peering" "hub_to_spoke" {
   name                      = "hub-to-spoke"

@@ -27,3 +27,10 @@ variable "spoke_vnet_name" {
   type        = string
   default     = "vnet-spoke-aviator"
 }
+
+variable "sql_admin_password" {
+  description = "The password for the SQL Managed Instance admin"
+  type        = string
+  sensitive   = true
+  default     = "ChangeMe12345!" 
+}
