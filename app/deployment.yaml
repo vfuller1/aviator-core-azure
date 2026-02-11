@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aviator-dashboard
+  labels:
+    app: aviator
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aviator
+  template:
+    metadata:
+      labels:
+        app: aviator
+    spec:
+      containers:
+      - name: dashboard
+        image: <your-acr-name>.azurecr.io/aviator-app:v1
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aviator-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+  selector:
+    app: aviator
