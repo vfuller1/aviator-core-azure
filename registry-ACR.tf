@@ -9,8 +9,8 @@ resource "azurerm_container_registry" "acr" {
 
 # Attach ACR to AKS (The Role Assignment)
 resource "azurerm_role_assignment" "aks_to_acr" {
-  # This must match the resource name in your aks.tf file
-  principal_id                     = azurerm_kubernetes_cluster.aks.kubelet_identity[0].object_id
+  # Change 'aks' to 'aviator_core' to match your resource name
+  principal_id                     = azurerm_kubernetes_cluster.aviator_core.kubelet_identity[0].object_id
   role_definition_name             = "AcrPull"
   scope                            = azurerm_container_registry.acr.id
   skip_service_principal_aad_check = true
