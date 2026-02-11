@@ -7,7 +7,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "The Azure region to deploy the Aviator Core foundation"
   type        = string
-  default     = "East US"
+  default     = "eastus2" # Changed from eastus to eastus2
 }
 
 variable "aks_cluster_name" {
