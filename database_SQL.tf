@@ -1,23 +1,23 @@
-# Azure SQL Managed Instance
-resource "azurerm_mssql_managed_instance" "aviator_sql" {
-  name                         = "sql-aviator-maintenance"
+# 1. Azure SQL Logical Server
+resource "azurerm_mssql_server" "aviator_sql" {
+  name                         = "sql-server-aviator-maintenance"
   resource_group_name          = azurerm_resource_group.aviator.name
   location                     = azurerm_resource_group.aviator.location
+  version                      = "12.0"
   administrator_login          = "aviatoradmin"
   administrator_login_password = var.sql_admin_password
-  license_type                 = "BasePrice"
-  subnet_id                    = azurerm_subnet.sql_subnet.id
-  sku_name                     = "GP_Gen5"
-  vcores                       = 4
-  storage_size_in_gb           = 32
-
-  tags = {
-    Environment = "Production"
-    Project     = "Aviator Core"
-  }
+  public_network_access_enabled = false # Lead Best Practice: Disable public access
 }
 
-# Private Endpoint for Secure DB Access
+# 2. Azure SQL Database
+resource "azurerm_mssql_database" "maintenance_db" {
+  name           = "db-airplane-maintenance"
+  server_id      = azurerm_mssql_server.aviator_sql.id
+  collation      = "SQL_Latin1_General_CP1_CI_AS"
+  sku_name       = "S0" # Standard S0 (cost-effective for demo)
+}
+
+# 3. Private Endpoint for the SQL Server
 resource "azurerm_private_endpoint" "sql_endpoint" {
   name                = "pe-aviator-sql"
   location            = azurerm_resource_group.aviator.location
@@ -26,8 +26,8 @@ resource "azurerm_private_endpoint" "sql_endpoint" {
 
   private_service_connection {
     name                           = "sql-privatelink"
-    private_connection_resource_id = azurerm_mssql_managed_instance.aviator_sql.id
-    subresource_names              = ["managedInstance"]
+    private_connection_resource_id = azurerm_mssql_server.aviator_sql.id
+    subresource_names              = ["sqlServer"] # Note the change from managedInstance
     is_manual_connection           = false
   }
 
