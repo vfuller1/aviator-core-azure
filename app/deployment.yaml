@@ -1,13 +1,12 @@
-apiVersion: v1
+apiVersion: v1  # KEEP THIS AS v1 (This is for Kubernetes)
 kind: ServiceAccount
 metadata:
   name: aviator-service-account
   namespace: default
   annotations:
-    # Links this K8s account to your Managed Identity
     azure.workload.identity/client-id: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3" 
 ---
-apiVersion: apps/v1
+apiVersion: apps/v1 # KEEP THIS AS apps/v1 (This is for Kubernetes)
 kind: Deployment
 metadata:
   name: aviator-dashboard
@@ -22,14 +21,13 @@ spec:
     metadata:
       labels:
         app: aviator
-        # Triggers the Mutating Admission Webhook for token injection
         azure.workload.identity/use: "true" 
     spec:
       serviceAccountName: aviator-service-account
       containers:
       - name: dashboard
-        # UPDATED: Pointing to your new authenticated image
-        image: aviatoracr.azurecr.io/aviator-app:v2 
+        # THIS IS THE ONLY v4 YOU CHANGE: Your app version
+        image: aviatoracr.azurecr.io/aviator-app:v4 
         ports:
         - containerPort: 5000
         env:
@@ -38,7 +36,7 @@ spec:
       imagePullSecrets:
       - name: acr-secret
 ---
-apiVersion: v1
+apiVersion: v1 # KEEP THIS AS v1 (This is for Kubernetes)
 kind: Service
 metadata:
   name: aviator-service

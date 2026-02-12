@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 def get_db_connection():
-    # Use the Azure SQL connection string without an 'Authentication' keyword
+    # Remove all 'Authentication' keywords to stop the 08001 error
     conn_str = (
         "Driver={ODBC Driver 18 for SQL Server};"
         "Server=sql-server-aviator-maintenance.database.windows.net,1433;"
@@ -16,16 +16,16 @@ def get_db_connection():
         "Connection Timeout=30;"
     )
     
-    # Manually fetch the Workload Identity token from the file AKS injected
+    # 1. Fetch the token from the file AKS injected into the pod
     token_path = os.environ.get("AZURE_FEDERATED_TOKEN_FILE")
     with open(token_path, 'r') as f:
         token = f.read().encode("UTF-16-LE")
         
-    # Format the token for the SQL driver
+    # 2. Package the token in the format the SQL driver expects
     token_struct = struct.pack(f"<I{len(token)}s", len(token), token)
-    SQL_COPT_SS_ACCESS_TOKEN = 1256  # Connection option for Access Token
     
-    return pyodbc.connect(conn_str, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: token_struct})
+    # 3. Pass the token as a connection attribute (1256 is the ID for Access Token)
+    return pyodbc.connect(conn_str, attrs_before={1256: token_struct})
 
 @app.route('/')
 def index():
