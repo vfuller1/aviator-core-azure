@@ -12,6 +12,10 @@ resource "azurerm_kubernetes_cluster" "aviator_core" {
   resource_group_name = azurerm_resource_group.aviator.name
   dns_prefix          = "aviatorcore"
 
+  # These features must be enabled for the SQL connection to work
+  oidc_issuer_enabled       = true
+  workload_identity_enabled = true
+
   default_node_pool {
     name         = "default"
     node_count   = 1
@@ -19,7 +23,6 @@ resource "azurerm_kubernetes_cluster" "aviator_core" {
     os_disk_type = "Managed"
   }
 
-  # Updated from SystemAssigned to UserAssigned
   identity {
     type         = "UserAssigned"
     identity_ids = [azurerm_user_assigned_identity.aviator_identity.id]
