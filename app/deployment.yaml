@@ -16,9 +16,12 @@ spec:
     spec:
       containers:
       - name: dashboard
-        image: <your-acr-name>.azurecr.io/aviator-app:v1
+        image: aviatoracr.azurecr.io/aviator-app:v1
         ports:
         - containerPort: 5000
+      # Use your manual secret
+      imagePullSecrets:
+      - name: acr-secret
 ---
 apiVersion: v1
 kind: Service
