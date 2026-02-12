@@ -43,10 +43,12 @@ def get_db_connection():
 def index():
     try:
         conn = get_db_connection()
+        if conn is None:
+            raise Exception("Failed to establish database connection - connection object is None")
+
         cursor = conn.cursor()
         
-        # Added 'dbo.' schema prefix to ensure the table is found
-        # Querying the airplane maintenance logs for the dashboard
+        # Querying the 280 airplane maintenance logs verified in Azure Query Editor
         query = "SELECT LogID, TailNumber, Status, Component, PartHours, Details FROM dbo.MaintenanceLogs"
         cursor.execute(query)
         
@@ -54,7 +56,9 @@ def index():
         conn.close()
         return render_template('index.html', rows=rows)
     except Exception as e:
-        # This will display the full error message in your browser for final debugging
+        # THIS IS THE FIX: Print the real error to the terminal logs for RCA
+        print(f"!!! APP ERROR TRACE: {str(e)}")
+        # This will still display the error in your browser for final debugging
         return f"Database Connection Error: {str(e)}", 500
 
 if __name__ == '__main__':

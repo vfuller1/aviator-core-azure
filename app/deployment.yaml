@@ -26,8 +26,8 @@ spec:
       serviceAccountName: aviator-service-account
       containers:
       - name: dashboard
-        # THIS IS THE ONLY v4 YOU CHANGE: Your app version
-        image: aviatoracr.azurecr.io/aviator-app:v4 
+        # THIS IS THE ONLY v. YOU CHANGE: Your app version
+        image: aviatoracr.azurecr.io/aviator-app:v5 
         ports:
         - containerPort: 5000
         env:
