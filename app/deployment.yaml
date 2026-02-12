@@ -1,3 +1,4 @@
+#deplyment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -19,7 +20,10 @@ spec:
         image: aviatoracr.azurecr.io/aviator-app:v1
         ports:
         - containerPort: 5000
-      # Use your manual secret
+        # This environment variable tells the Python app which identity to use
+        env:
+        - name: AZURE_CLIENT_ID
+          value: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3" # Extracted from your Entra Admin ID
       imagePullSecrets:
       - name: acr-secret
 ---
