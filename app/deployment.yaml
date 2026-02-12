@@ -4,7 +4,8 @@ metadata:
   name: aviator-service-account
   namespace: default
   annotations:
-    azure.workload.identity/client-id: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3" #
+    # Links this K8s account to your Managed Identity
+    azure.workload.identity/client-id: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3" 
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -21,19 +22,19 @@ spec:
     metadata:
       labels:
         app: aviator
-        # This label is CRITICAL to trigger the token injection
-        azure.workload.identity/use: "true"
+        # Triggers the Mutating Admission Webhook for token injection
+        azure.workload.identity/use: "true" 
     spec:
-      # This links the pod to the federated trust we built
       serviceAccountName: aviator-service-account
       containers:
       - name: dashboard
-        image: aviatoracr.azurecr.io/aviator-app:v1
+        # UPDATED: Pointing to your new authenticated image
+        image: aviatoracr.azurecr.io/aviator-app:v2 
         ports:
         - containerPort: 5000
         env:
         - name: AZURE_CLIENT_ID
-          value: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3" #
+          value: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3"
       imagePullSecrets:
       - name: acr-secret
 ---
