@@ -5,12 +5,14 @@ import os
 app = Flask(__name__)
 
 def get_db_connection():
-    # Updated for Workload Identity Federation
+    # Reverting Authentication to 'ActiveDirectoryMsi'
+    # The ODBC Driver 18 will automatically use Workload Identity tokens 
+    # when it sees this flag and the injected environment variables.
     conn_str = (
         "Driver={ODBC Driver 18 for SQL Server};"
         "Server=sql-server-aviator-maintenance.database.windows.net,1433;"
         "Database=db-airplane-maintenance;"
-        "Authentication=ActiveDirectoryWorkloadIdentity;" 
+        "Authentication=ActiveDirectoryMsi;" 
         "Encrypt=yes;"
         "TrustServerCertificate=no;"
         "Connection Timeout=30;"
@@ -28,7 +30,7 @@ def index():
         conn.close()
         return render_template('index.html', rows=rows)
     except Exception as e:
-        # Helpful for your interview: returns the error to the screen
+        # Critical for troubleshooting the 500 error
         return f"Database Connection Error: {str(e)}", 500
 
 if __name__ == '__main__':
