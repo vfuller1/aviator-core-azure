@@ -13,14 +13,19 @@ spec:
     metadata:
       labels:
         app: aviator
-        azure.workload.identity/use: "true" # Required for token injection
+        azure.workload.identity/use: "true"
+        deploy-timestamp: "20260212-2210" # Forces K8s to see a change
     spec:
-      serviceAccountName: aviator-service-account # Links to the corrected SA
+      serviceAccountName: aviator-service-account
       containers:
       - name: aviator-container
-        image: aviatoracr.azurecr.io/aviator-app:v6 # Points to your fixed code
+        image: aviatoracr.azurecr.io/aviator-app:v9
+        imagePullPolicy: Always # Ensures it tries to pull fresh
         ports:
         - containerPort: 5000
+        env:
+        - name: AZURE_CLIENT_ID
+          value: "58737ab5-dd13-4381-b28e-82d46e297800"
         resources:
           requests:
             cpu: "100m"
