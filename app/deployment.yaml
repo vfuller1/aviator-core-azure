@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aviator-dashboard
+  labels:
+    app: aviator
 spec:
   replicas: 2
   selector:
@@ -11,11 +13,31 @@ spec:
     metadata:
       labels:
         app: aviator
-        azure.workload.identity/use: "true" # REQUIRED for token injection
+        azure.workload.identity/use: "true" # Enables the token injection
     spec:
-      serviceAccountName: aviator-service-account # Use the SA we annotated earlier
+      serviceAccountName: aviator-service-account # Links to the annotated SA
       containers:
       - name: aviator-container
-        image: aviatoracr.azurecr.io/aviator-app:v6 # Correct image tag
+        image: aviatoracr.azurecr.io/aviator-app:v6 # Uses your fixed Python code
         ports:
         - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aviator-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: aviator
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
