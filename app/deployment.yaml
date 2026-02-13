@@ -13,12 +13,12 @@ spec:
     metadata:
       labels:
         app: aviator
-        azure.workload.identity/use: "true" # Enables the token injection
+        azure.workload.identity/use: "true" # Required for token injection
     spec:
-      serviceAccountName: aviator-service-account # Links to the annotated SA
+      serviceAccountName: aviator-service-account # Links to the corrected SA
       containers:
       - name: aviator-container
-        image: aviatoracr.azurecr.io/aviator-app:v6 # Uses your fixed Python code
+        image: aviatoracr.azurecr.io/aviator-app:v6 # Points to your fixed code
         ports:
         - containerPort: 5000
         resources:
