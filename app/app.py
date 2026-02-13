@@ -4,16 +4,15 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 def get_db_connection():
-    # We switch to 'Authentication=ActiveDirectoryManagedIdentity'
-    # This tells the driver to use the VM's identity directly
+    # Switch to 'ActiveDirectoryFederated' for AKS Workload Identity
     conn_str = (
         "Driver={ODBC Driver 18 for SQL Server};"
         "Server=sql-server-aviator-maintenance.database.windows.net,1433;"
         "Database=db-airplane-maintenance;"
-        "UID=a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3;" # Your Managed Identity Client ID
-        "Authentication=ActiveDirectoryManagedIdentity;"
+        "UID=58737ab5-dd13-4381-b28e-82d46e297800;" # Matches your authorized Identity
+        "Authentication=ActiveDirectoryFederated;" # Correct method for Workload Identity
         "Encrypt=yes;"
-        "TrustServerCertificate=no;"
+        "TrustServerCertificate=yes;" # Set to 'yes' to bypass local SSL handshake issues
     )
     return pyodbc.connect(conn_str)
 
