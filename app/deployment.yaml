@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aviator-dashboard
-  labels:
-    app: aviator
 spec:
   replicas: 2
   selector:
@@ -13,26 +11,11 @@ spec:
     metadata:
       labels:
         app: aviator
-        # REMOVED: azure.workload.identity/use: "true"
+        azure.workload.identity/use: "true" # REQUIRED for token injection
     spec:
+      serviceAccountName: aviator-service-account # Use the SA we annotated earlier
       containers:
       - name: aviator-container
-        image: aviatoracr.azurecr.io/aviator-app:v6 # Pointing to your new 'v6' strategy
+        image: aviatoracr.azurecr.io/aviator-app:v6 # Correct image tag
         ports:
         - containerPort: 5000
-        env:
-        - name: AZURE_CLIENT_ID
-          value: "a58e6bd1-f10e-4cd6-bd86-9aa8f641e5a3" # Your Managed Identity Client ID
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: aviator-service
-spec:
-  type: LoadBalancer
-  selector:
-    app: aviator
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 5000
