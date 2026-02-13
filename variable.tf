@@ -7,7 +7,14 @@ variable "resource_group_name" {
 variable "location" {
   description = "The Azure region to deploy the Aviator Core foundation"
   type        = string
-  default     = "eastus2" # Changed from eastus to eastus2
+  default     = "eastus2" 
+}
+
+# UPDATED: Matches the Tenant ID from your portal screenshot
+variable "tenant_id" {
+  description = "The Azure Tenant ID for Entra ID authentication"
+  type        = string
+  default     = "3246f21f-4c75-481d-8284-80c8ce2b36d1" 
 }
 
 variable "aks_cluster_name" {
@@ -29,7 +36,7 @@ variable "spoke_vnet_name" {
 }
 
 variable "sql_admin_password" {
-  description = "The password for the SQL Managed Instance admin"
+  description = "The password for the SQL Server admin"
   type        = string
   sensitive   = true
   default     = "ChangeMe12345!" 
